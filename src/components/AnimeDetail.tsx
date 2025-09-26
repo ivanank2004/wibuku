@@ -31,7 +31,6 @@ const AnimeDetailPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100 font-sans">
       <div className="container mx-auto max-w-screen-lg p-6">
-        {/* Tombol Back */}
         <button
           className="mb-6 px-4 py-2 bg-blue-800 text-white rounded hover:bg-blue-700"
           onClick={() => navigate(-1)}
@@ -40,7 +39,6 @@ const AnimeDetailPage: React.FC = () => {
         </button>
 
         <div className="flex flex-col md:flex-row gap-8">
-          {/* Poster anime */}
           <div className="flex-shrink-0 md:w-72">
             <img
               src={anime.images.jpg.image_url}
@@ -49,7 +47,6 @@ const AnimeDetailPage: React.FC = () => {
             />
           </div>
 
-          {/* Detail anime */}
           <div className="flex-1 leading-relaxed">
             <h1 className="text-3xl md:text-4xl font-bold mb-4">{anime.title}</h1>
 
@@ -92,7 +89,6 @@ const AnimeDetailPage: React.FC = () => {
               <p className="text-gray-200 text-justify">{anime.synopsis}</p>
             )}
 
-            {/* Trailer opsional */}
             {anime.trailer?.embed_url && (
               <div className="mt-6">
                 <h3 className="text-2xl font-bold mb-2">Trailer</h3>

@@ -47,12 +47,8 @@ export interface MangaDetail {
   genres?: { mal_id: number; name: string }[];
 }
 
-// ----------------------
-// Simple in-memory cache
 const cache: Record<string, any> = {};
 
-// ----------------------
-// Fetch with retry
 async function fetchWithRetry(url: string, retries = 3, delay = 1500): Promise<any> {
   for (let i = 0; i < retries; i++) {
     const res = await fetch(url);
@@ -67,8 +63,6 @@ async function fetchWithRetry(url: string, retries = 3, delay = 1500): Promise<a
   throw new Error("Too many retries, still rate limited");
 }
 
-// ----------------------
-// Generic cached fetch
 async function cachedFetch(key: string, url: string, limit?: number): Promise<any> {
   if (cache[key]) return cache[key];
   const data = await fetchWithRetry(url);
@@ -77,8 +71,6 @@ async function cachedFetch(key: string, url: string, limit?: number): Promise<an
   return result;
 }
 
-// ----------------------
-// API functions
 export async function getTopAnime(limit = 5): Promise<Media[]> {
   try {
     const data = await cachedFetch("topAnime", `${API_BASE}/top/anime?limit=${limit}`, limit);
@@ -205,4 +197,86 @@ export async function getMangaDetail(id: number): Promise<MangaDetail | null> {
     console.error("Failed to fetch manga detail:", err);
     return null;
   }
+}
+
+export async function getAnimeList(
+  page = 1,
+  q = "",
+  genre?: string,
+  status?: string,
+  orderBy: string = "score",
+  sort: string = "desc"
+): Promise<{
+  data: Media[];
+  last_page: number;
+}> {
+  const key = `animeList_${page}_${q}_${genre ?? ""}_${status ?? ""}_${orderBy}_${sort}`;
+  if (cache[key]) return cache[key];
+
+  const params = new URLSearchParams({
+    page: String(page),
+    order_by: orderBy,
+    sort,
+  });
+  if (q) params.append("q", q);
+  if (genre) params.append("genres", genre);
+  if (status) params.append("status", status);
+
+  const url = `${API_BASE}/anime?${params.toString()}`;
+  const res = await fetchWithRetry(url);
+
+  const result = {
+    data: res.data.map((a: any) => ({
+      mal_id: a.mal_id,
+      title: a.title,
+      images: a.images,
+      score: a.score,
+      status: a.status,
+    })),
+    last_page: res.pagination?.last_visible_page ?? 1,
+  };
+
+  cache[key] = result;
+  return result;
+}
+
+export async function getMangaList(
+  page = 1,
+  q = "",
+  genre?: string,
+  status?: string,
+  orderBy: string = "score",
+  sort: string = "desc"
+): Promise<{
+  data: Media[];
+  last_page: number;
+}> {
+  const key = `mangaList_${page}_${q}_${genre ?? ""}_${status ?? ""}_${orderBy}_${sort}`;
+  if (cache[key]) return cache[key];
+
+  const params = new URLSearchParams({
+    page: String(page),
+    order_by: orderBy,
+    sort,
+  });
+  if (q) params.append("q", q);
+  if (genre) params.append("genres", genre);
+  if (status) params.append("status", status);
+
+  const url = `${API_BASE}/manga?${params.toString()}`;
+  const res = await fetchWithRetry(url);
+
+  const result = {
+    data: res.data.map((m: any) => ({
+      mal_id: m.mal_id,
+      title: m.title,
+      images: m.images,
+      score: m.score,
+      status: m.status,
+    })),
+    last_page: res.pagination?.last_visible_page ?? 1,
+  };
+
+  cache[key] = result;
+  return result;
 }

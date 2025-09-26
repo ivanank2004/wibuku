@@ -38,7 +38,6 @@ const MangaDetailPage: React.FC = () => {
         </button>
 
         <div className="flex flex-col md:flex-row gap-8">
-          {/* Gambar manga dengan rasio tetap */}
           <div className="flex-shrink-0 md:w-72">
             <img
               src={manga.images.jpg.image_url}
@@ -47,7 +46,6 @@ const MangaDetailPage: React.FC = () => {
             />
           </div>
 
-          {/* Detail manga */}
           <div className="flex-1 leading-relaxed">
             <h1 className="text-3xl md:text-4xl font-bold mb-4">
               {manga.title}

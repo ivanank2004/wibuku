@@ -1,4 +1,6 @@
 // api.ts
+const API_BASE = process.env.REACT_APP_API_URL || "https://api.jikan.moe/v4";
+
 export interface Media {
   mal_id: number;
   title: string;
@@ -69,7 +71,6 @@ async function fetchWithRetry(url: string, retries = 3, delay = 1500): Promise<a
 // Generic cached fetch
 async function cachedFetch(key: string, url: string, limit?: number): Promise<any> {
   if (cache[key]) return cache[key];
-
   const data = await fetchWithRetry(url);
   const result = limit ? data.data.slice(0, limit) : data.data;
   cache[key] = result;
@@ -80,7 +81,7 @@ async function cachedFetch(key: string, url: string, limit?: number): Promise<an
 // API functions
 export async function getTopAnime(limit = 5): Promise<Media[]> {
   try {
-    const data = await cachedFetch("topAnime", `https://api.jikan.moe/v4/top/anime?limit=${limit}`, limit);
+    const data = await cachedFetch("topAnime", `${API_BASE}/top/anime?limit=${limit}`, limit);
     return data.map((anime: any) => ({
       mal_id: anime.mal_id,
       title: anime.title,
@@ -96,7 +97,7 @@ export async function getTopAnime(limit = 5): Promise<Media[]> {
 
 export async function getUpcomingAnime(limit = 5): Promise<Media[]> {
   try {
-    const data = await cachedFetch("upcomingAnime", `https://api.jikan.moe/v4/seasons/upcoming`, limit);
+    const data = await cachedFetch("upcomingAnime", `${API_BASE}/seasons/upcoming`, limit);
     return data.map((anime: any) => ({
       mal_id: anime.mal_id,
       title: anime.title,
@@ -112,7 +113,7 @@ export async function getUpcomingAnime(limit = 5): Promise<Media[]> {
 
 export async function getCurrentlyAiring(limit = 5): Promise<Media[]> {
   try {
-    const data = await cachedFetch("currentlyAiring", `https://api.jikan.moe/v4/seasons/now`, limit);
+    const data = await cachedFetch("currentlyAiring", `${API_BASE}/seasons/now`, limit);
     return data.map((anime: any) => ({
       mal_id: anime.mal_id,
       title: anime.title,
@@ -128,7 +129,7 @@ export async function getCurrentlyAiring(limit = 5): Promise<Media[]> {
 
 export async function getTopManga(limit = 5): Promise<Media[]> {
   try {
-    const data = await cachedFetch("topManga", `https://api.jikan.moe/v4/top/manga?limit=${limit}`, limit);
+    const data = await cachedFetch("topManga", `${API_BASE}/top/manga?limit=${limit}`, limit);
     return data.map((manga: any) => ({
       mal_id: manga.mal_id,
       title: manga.title,
@@ -147,7 +148,7 @@ export async function getAnimeDetail(id: number): Promise<AnimeDetail | null> {
   if (cache[key]) return cache[key];
 
   try {
-    const res = await fetchWithRetry(`https://api.jikan.moe/v4/anime/${id}/full`);
+    const res = await fetchWithRetry(`${API_BASE}/anime/${id}/full`);
     const anime = res.data;
     const detail: AnimeDetail = {
       mal_id: anime.mal_id,
@@ -179,7 +180,7 @@ export async function getMangaDetail(id: number): Promise<MangaDetail | null> {
   if (cache[key]) return cache[key];
 
   try {
-    const res = await fetchWithRetry(`https://api.jikan.moe/v4/manga/${id}/full`);
+    const res = await fetchWithRetry(`${API_BASE}/manga/${id}/full`);
     const manga = res.data;
     const detail: MangaDetail = {
       mal_id: manga.mal_id,

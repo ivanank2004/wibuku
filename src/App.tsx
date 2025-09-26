@@ -11,11 +11,9 @@ import Footer from "./components/Footer";
 function App() {
   return (
     <Router>
-      {/* flex + flex-col agar footer di bawah, min-h-screen agar tinggi penuh */}
       <div className="flex flex-col min-h-screen bg-gray-900 text-gray-100 font-sans">
         <Navbar />
 
-        {/* flex-grow agar bagian ini mengisi ruang di antara navbar & footer */}
         <main className="flex-grow pt-16">
           <Routes>
             <Route path="/" element={<Homepage />} />
